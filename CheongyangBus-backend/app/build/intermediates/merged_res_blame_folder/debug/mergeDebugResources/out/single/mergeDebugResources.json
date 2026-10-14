@@ -1,0 +1,70 @@
+[
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_ic_bell.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/ic_bell.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/layout_activity_my_page.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_my_page.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/layout_activity_bus_search.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_bus_search.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/layout_activity_bus_result.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_bus_result.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_ic_arrow.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/ic_arrow.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_ic_star.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/ic_star.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/layout_activity_login.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_badge_background.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/badge_background.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_ic_back.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/ic_back.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/layout_activity_main.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/layout_activity_bus_detail.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_bus_detail.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/layout_activity_favorite.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_favorite.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_ic_person.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/ic_person.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/layout_item_bus_time.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/item_bus_time.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_ic_pin.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/ic_pin.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_ic_bus.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/ic_bus.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-debug-33:/drawable_circle_background.xml.flat",
+        "source": "com.example.cheongyangbus.app-main-35:/drawable/circle_background.xml"
+    }
+]

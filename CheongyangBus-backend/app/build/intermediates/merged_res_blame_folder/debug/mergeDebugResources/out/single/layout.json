@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "com.example.cheongyangbus.app-mergeDebugResources-32:/layout/activity_bus_search.xml",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_bus_search.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-mergeDebugResources-32:/layout/activity_main.xml",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-mergeDebugResources-32:/layout/item_bus_time.xml",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/item_bus_time.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-mergeDebugResources-32:/layout/activity_my_page.xml",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_my_page.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-mergeDebugResources-32:/layout/activity_bus_result.xml",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_bus_result.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-mergeDebugResources-32:/layout/activity_login.xml",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-mergeDebugResources-32:/layout/activity_favorite.xml",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_favorite.xml"
+    },
+    {
+        "merged": "com.example.cheongyangbus.app-mergeDebugResources-32:/layout/activity_bus_detail.xml",
+        "source": "com.example.cheongyangbus.app-main-35:/layout/activity_bus_detail.xml"
+    }
+]
