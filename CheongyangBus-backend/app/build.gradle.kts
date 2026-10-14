@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 android {
     namespace = "com.example.cheongyangbus"
@@ -26,4 +27,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    val room_version = "3.0.3"
+    implementation("androidx.room3:room3-runtime:$room_version")
+    ksp("androidx.room3:room3-compiler:$room_version")
 }
