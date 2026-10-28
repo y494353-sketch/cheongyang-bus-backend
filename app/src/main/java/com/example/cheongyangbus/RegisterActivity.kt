@@ -3,10 +3,10 @@ package com.example.cheongyangbus
 
 import android.os.Bundle
 import android.widget.Toast
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
 import androidx.lifecycle.lifecycleScope
 import com.example.cheongyangbus.data.UserRepository
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
 class RegisterActivity : BaseActivity() {
@@ -76,14 +76,22 @@ class RegisterActivity : BaseActivity() {
                     passwordConfirm.requestFocus()
                 }
 
-                // 모든 입력 정상
+                // 모든 입력 정상 → Room DB에 회원 저장
                 else -> {
                     lifecycleScope.launch {
                         val created = UserRepository(this@RegisterActivity).signup(id, pw)
+
                         if (created) {
-                            Toast.makeText(this@RegisterActivity, "회원가입 완료", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@RegisterActivity,
+                                "회원가입 완료",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            // 로그인 화면으로 돌아가기
                             finish()
                         } else {
+                            // 이미 있는 아이디
                             userId.error = "이미 사용 중인 아이디입니다."
                             userId.requestFocus()
                         }
