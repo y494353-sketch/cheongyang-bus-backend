@@ -25,8 +25,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
-    val room_version = "3.0.3"
-    implementation("androidx.room3:room3-runtime:$room_version")
+
+    // Room: 폰 안의 DB (회원 정보 저장)
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")

@@ -9,27 +9,26 @@ import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
-/** 회원가입·로그인. 화면(Activity)은 이 클래스만 부르면 됩니다. */
+/** 회원가입·로그인. signup / login 은 lifecycleScope.launch { } 안에서 부릅니다. */
 class UserRepository(context: Context) {
 
     private val dao = AppDatabase.get(context).userDao()
 
     /** 회원가입. 성공하면 true, 이미 있는 아이디면 false */
-    suspend fun signup(loginId: String, password: String, nickname: String): Boolean {
+    suspend fun signup(loginId: String, password: String): Boolean {
         val hash = withContext(Dispatchers.Default) { hashPassword(password) }
         return try {
-            dao.insert(User(loginId = loginId, passwordHash = hash, nickname = nickname))
+            dao.insert(User(loginId = loginId, passwordHash = hash))
             true
         } catch (e: SQLiteConstraintException) {
             false
         }
     }
 
-    /** 로그인. 아이디와 비밀번호가 맞으면 그 회원, 아니면 null */
-    suspend fun login(loginId: String, password: String): User? {
-        val user = dao.findByLoginId(loginId) ?: return null
-        val ok = withContext(Dispatchers.Default) { checkPassword(password, user.passwordHash) }
-        return if (ok) user else null
+    /** 로그인. 아이디·비밀번호가 맞으면 true, 틀리면 false */
+    suspend fun login(loginId: String, password: String): Boolean {
+        val user = dao.findByLoginId(loginId) ?: return false
+        return withContext(Dispatchers.Default) { checkPassword(password, user.passwordHash) }
     }
 
     // ---- 비밀번호 해시 (PBKDF2). 저장 형식: "salt:hash" (16진수) ----
