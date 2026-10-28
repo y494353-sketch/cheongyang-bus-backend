@@ -1,6 +1,7 @@
 package com.example.cheongyangbus.data
 
 import android.content.Context
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -15,8 +16,11 @@ import androidx.room.RoomDatabase
 @Entity(tableName = "users", indices = [Index(value = ["loginId"], unique = true)])
 data class User(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val loginId: String,       // 아이디 (중복 불가)
-    val passwordHash: String   // 비밀번호 원문 대신 해시를 저장
+    // 아이디. NOCASE 라서 Demo 와 demo 는 같은 아이디로 취급 (중복 가입 불가)
+    @ColumnInfo(collate = ColumnInfo.NOCASE) val loginId: String,
+    // 비밀번호 원문 대신 해시를 저장 (UserRepository 참고)
+    val passwordHash: String,
+    val nickname: String
 )
 
 @Dao
