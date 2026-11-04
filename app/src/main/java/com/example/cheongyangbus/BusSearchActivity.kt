@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
+import com.example.cheongyangbus.data.Prefs
 import com.example.cheongyangbus.databinding.ActivityBusSearchBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -64,7 +65,7 @@ class BusSearchActivity : BaseActivity() {
             // 화면의 고정 필드 값에 의존하지 않고 모드로 방향을 확정합니다.
             val origin = if (departing) cheongyang else region
             val destination = if (departing) region else cheongyang
-            DemoData.recentRoute = getString(R.string.route_format, origin, destination)
+            Prefs.setRecentRoute(this, getString(R.string.route_format, origin, destination))
             startActivity(Intent(this, BusResultActivity::class.java).apply {
                 putExtra("origin", origin)
                 putExtra("destination", destination)

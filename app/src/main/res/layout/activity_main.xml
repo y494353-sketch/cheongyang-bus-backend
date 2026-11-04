@@ -48,8 +48,6 @@
                     <TextView style="@style/Body" android:id="@+id/recentHelp" android:text="@string/recent_help"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-            <Space android:layout_width="1dp" android:layout_height="24dp"/>
-            <TextView style="@style/Body" android:text="@string/demo_notice"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

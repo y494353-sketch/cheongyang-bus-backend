@@ -2,6 +2,7 @@ package com.example.cheongyangbus
 
 import android.content.Intent
 import android.os.Bundle
+import com.example.cheongyangbus.data.Prefs
 import com.example.cheongyangbus.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity() {
@@ -21,6 +22,6 @@ class MainActivity : BaseActivity() {
     }
     override fun onResume() {
         super.onResume()
-        binding.recentRoute.text = DemoData.recentRoute ?: getString(R.string.recent_empty)
+        binding.recentRoute.text = Prefs.recentRoute(this) ?: getString(R.string.recent_empty)
     }
 }

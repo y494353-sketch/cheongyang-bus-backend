@@ -23,7 +23,6 @@
     <string name="password">비밀번호</string>
     
     
-    <string name="demo_login">체험 화면입니다. 입력 없이도 시작할 수 있어요.</string>
     
     
     <string name="service_label">청양 시외버스 시간 안내</string>
@@ -80,13 +79,11 @@
     <string name="back">뒤로가기</string>
     
     
-    <string name="demo_notice">예시 시간표 · 실제 운행 정보가 아닙니다.</string>
     
     
-    <string name="sample_date">2026.09.30 · 예시 조회일</string>
     
     
-    <string name="schedule_count">조회 결과 · 5편</string>
+    <string name="schedule_count">조회 결과 · %1$d편</string>
     
     
     <string name="duration">예상 소요시간</string>
@@ -137,7 +134,6 @@
     <string name="alarm_title">출발 알림</string>
     
     
-    <string name="alarm_message">출발 10분 전 알림이 선택되었습니다. 현재는 체험 UI로, 실제 알림은 발송되지 않습니다.</string>
     
     
     <string name="alarm_off">출발 알림 선택을 해제했습니다.</string>
@@ -158,31 +154,27 @@
     <string name="favorites_empty">저장한 노선이 없어요.\n버스 상세정보에서 즐겨찾기를 추가해 보세요.</string>
     
     
-    <string name="favorite_demo">처음에는 예시 노선 2개가 표시됩니다. 변경 사항은 앱 실행 중에만 유지됩니다.</string>
     
     
     <string name="user">사용자</string>
     
     
-    <string name="guest">청양버스 체험 사용자</string>
+    <string name="guest">청양버스 회원</string>
     
     
     <string name="favorite_routes">즐겨찾기 노선</string>
     
     
-    <string name="notification_settings">알림 설정</string>
+    <string name="notification_settings">출발 알림</string>
     
     
     <string name="logout">로그아웃</string>
     
     
-    <string name="account_note">로그인 및 회원정보는 체험용 화면입니다.</string>
     
     
-    <string name="notifications_title">알림 설정 안내</string>
     
     
-    <string name="notifications_message">버스 상세정보에서 각 출발편의 알림을 선택할 수 있습니다. 실제 알림은 발송되지 않으며, 선택은 앱을 종료하면 초기화됩니다.</string>
     
     
     <string name="same_region">출발지와 도착지를 다르게 선택해 주세요.</string>
@@ -197,7 +189,6 @@
     <string name="journey_line">│\n↓\n│</string>
     
     
-    <string name="details_note">표시된 시간과 운행 상태는 UI 확인용 예시입니다.</string>
     
     
     <string name="favorite_heading">저장한 노선</string>

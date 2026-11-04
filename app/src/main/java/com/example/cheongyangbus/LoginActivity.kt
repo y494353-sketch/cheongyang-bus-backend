@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.example.cheongyangbus.data.Prefs
 import com.example.cheongyangbus.data.UserRepository
 import com.example.cheongyangbus.databinding.ActivityLoginBinding
 import kotlinx.coroutines.launch
@@ -25,6 +26,7 @@ class LoginActivity : BaseActivity() {
 
             lifecycleScope.launch {
                 if (UserRepository(this@LoginActivity).login(id, pw)) {
+                    Prefs.setLoginId(this@LoginActivity, id) // 내 정보 화면에 표시
                     startActivity(
                         Intent(this@LoginActivity, MainActivity::class.java)
                     )

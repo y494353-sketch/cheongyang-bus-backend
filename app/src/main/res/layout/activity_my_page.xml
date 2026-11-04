@@ -6,7 +6,7 @@
             <Space android:layout_width="1dp" android:layout_height="12dp"/>
             <ImageView android:layout_width="88dp" android:layout_height="88dp" android:src="@drawable/ic_person" android:importantForAccessibility="no" android:padding="24dp" android:background="@drawable/circle_background" android:layout_gravity="center_horizontal"/>
             <Space android:layout_width="1dp" android:layout_height="16dp"/>
-            <TextView style="@style/Heading" android:text="@string/user" android:gravity="center"/>
+            <TextView style="@style/Heading" android:id="@+id/userName" android:text="@string/user" android:gravity="center"/>
             <Space android:layout_width="1dp" android:layout_height="6dp"/>
             <TextView style="@style/Body" android:text="@string/guest" android:gravity="center"/>
             <Space android:layout_width="1dp" android:layout_height="32dp"/>
@@ -14,13 +14,11 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
                     <com.google.android.material.button.MaterialButton android:id="@+id/favoritesButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/favorite_routes" style="@style/Widget.Material3.Button.OutlinedButton" app:cornerRadius="14dp" android:minHeight="56dp" app:icon="@drawable/ic_star"/>
                     <Space android:layout_width="1dp" android:layout_height="12dp"/>
-                    <com.google.android.material.button.MaterialButton android:id="@+id/notificationsButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/notification_settings" style="@style/Widget.Material3.Button.OutlinedButton" app:cornerRadius="14dp" android:minHeight="56dp" app:icon="@drawable/ic_bell"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/notificationsSwitch" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/notification_settings" android:textColor="@color/ink" android:textSize="16sp" android:minHeight="56dp" android:paddingStart="16dp" android:paddingEnd="8dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <Space android:layout_width="1dp" android:layout_height="24dp"/>
             <com.google.android.material.button.MaterialButton android:id="@+id/logoutButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/logout" style="@style/Widget.Material3.Button.OutlinedButton" app:cornerRadius="14dp" android:minHeight="56dp"/>
-            <Space android:layout_width="1dp" android:layout_height="20dp"/>
-            <TextView style="@style/Body" android:text="@string/account_note" android:gravity="center"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

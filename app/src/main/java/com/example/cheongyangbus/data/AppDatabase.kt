@@ -10,6 +10,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /** users 테이블: 회원 한 명 = 한 줄 */
 @Entity(tableName = "users", indices = [Index(value = ["loginId"], unique = true)])
@@ -30,10 +31,20 @@ interface UserDao {
 }
 
 /** 앱 전체에서 하나만 쓰는 Room DB (파일 이름: cheongyang_bus.db) */
-@Database(entities = [User::class], version = 1, exportSchema = false)
+@Database(
+    entities = [User::class, Schedule::class, Favorite::class, BusAlarm::class],
+    version = 3,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
+
+    abstract fun scheduleDao(): ScheduleDao
+
+    abstract fun favoriteDao(): FavoriteDao
+
+    abstract fun alarmDao(): AlarmDao
 
     companion object {
         @Volatile
@@ -45,7 +56,16 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "cheongyang_bus.db"
-                ).build().also { instance = it }
+                )
+                    // 개발 중이라 테이블 구조가 바뀌면 DB를 새로 만듭니다 (이때 가입한 계정도 지워짐)
+                    .fallbackToDestructiveMigration()
+                    // 앱을 켤 때마다 시간표를 assets/timetable.csv 내용으로 다시 채웁니다
+                    .addCallback(object : RoomDatabase.Callback() {
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            fillSchedules(context.applicationContext, db)
+                        }
+                    })
+                    .build().also { instance = it }
             }
     }
 }

@@ -4,8 +4,6 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
         <TextView style="@style/Heading" android:text="@string/favorites_sub"/>
         <Space android:layout_width="1dp" android:layout_height="12dp"/>
-        <TextView style="@style/Body" android:text="@string/favorite_demo"/>
-        <Space android:layout_width="1dp" android:layout_height="20dp"/>
         <TextView style="@style/Body" android:id="@+id/emptyMessage" android:text="@string/favorites_empty" android:visibility="gone"/>
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/favoriteList" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingBottom="24dp" android:clipToPadding="false"/>
