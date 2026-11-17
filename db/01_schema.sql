@@ -5,14 +5,15 @@
 --  문자셋    : utf8mb4 (한글)
 --  실행 순서 : 01_schema.sql → 02_seed.sql
 --
---  테이블 9개
+--  테이블 10개
 --    [버스 노선·시간 데이터]  region, terminal, route, schedule
 --    [운행 상태·지연 정보]    operation_status
 --    [사용자·즐겨찾기·알림]   users, favorite, alarm, search_history
+--    [공지사항]               notice
 --  뷰 1개
 --    v_schedule : 출발·도착 시각과 예상 소요시간을 한 번에 읽는 조회용 뷰
 --
---  지금 서버(server/)가 쓰는 것: region, terminal, route, schedule, v_schedule, users, favorite
+--  지금 서버(server/)가 쓰는 것: region, terminal, route, schedule, v_schedule, users, favorite, notice
 -- =====================================================================
 
 -- 주의: 처음부터 다시 만들 때 쓰는 스크립트입니다. 기존 데이터가 모두 지워집니다.
@@ -110,15 +111,18 @@ CREATE TABLE operation_status (
 -- ---------------------------------------------------------------------
 -- 6. users : 사용자 (로그인 화면의 아이디·비밀번호)
 --    비밀번호는 백엔드에서 BCrypt로 해시한 값만 저장 (평문 저장 금지)
+--    role = ADMIN 이면 로그인 후 관리자 화면으로 이동하고 관리자 API를 쓸 수 있음
 -- ---------------------------------------------------------------------
 CREATE TABLE users (
   user_id        INT           NOT NULL AUTO_INCREMENT COMMENT '사용자 번호',
   login_id       VARCHAR(30)   NOT NULL                COMMENT '아이디',
   password_hash  VARCHAR(255)  NOT NULL                COMMENT '비밀번호 해시 (BCrypt)',
   nickname       VARCHAR(30)   NOT NULL                COMMENT '표시 이름 (내 정보 화면)',
+  role           VARCHAR(10)   NOT NULL DEFAULT 'USER' COMMENT 'USER 일반 회원 / ADMIN 관리자',
   created_at     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '가입 시각',
   PRIMARY KEY (user_id),
-  UNIQUE KEY uk_users_login_id (login_id)
+  UNIQUE KEY uk_users_login_id (login_id),
+  CONSTRAINT ck_users_role CHECK (role IN ('USER', 'ADMIN'))
 ) ENGINE = InnoDB COMMENT = '사용자';
 
 
@@ -177,6 +181,18 @@ CREATE TABLE search_history (
   CONSTRAINT fk_history_dest   FOREIGN KEY (dest_region_id)   REFERENCES region (region_id)
 ) ENGINE = InnoDB COMMENT = '최근 검색 기록';
 
+
+-- ---------------------------------------------------------------------
+-- 10. notice : 공지사항 (관리자가 등록·수정·삭제, 사용자는 메인 화면에서 읽기)
+-- ---------------------------------------------------------------------
+CREATE TABLE notice (
+  notice_id   INT           NOT NULL AUTO_INCREMENT COMMENT '번호',
+  title       VARCHAR(100)  NOT NULL                COMMENT '제목',
+  content     TEXT          NOT NULL                COMMENT '내용',
+  created_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록 시각',
+  updated_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '마지막 수정 시각',
+  PRIMARY KEY (notice_id)
+) ENGINE = InnoDB COMMENT = '공지사항';
 
 -- ---------------------------------------------------------------------
 -- 조회용 뷰 v_schedule

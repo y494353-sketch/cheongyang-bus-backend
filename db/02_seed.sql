@@ -1,9 +1,9 @@
 -- =====================================================================
---  청양버스 초기 데이터 : 지역 5 · 터미널 8 · 노선 13 · 시간표 76편
+--  청양버스 초기 데이터 : 지역 5 · 터미널 8 · 노선 13 · 시간표 76편 · 관리자 계정 1
 --  01_schema.sql 다음에 실행합니다.
 --  출처: 청양터미널 시외버스 시간표(2026.7.1 기준, 청양 출발)
 --        transportation.asamaru.net (청양 도착 방향, 도착 시각)
---  회원 데이터는 넣지 않습니다. 앱에서 회원가입하면 users 에 들어갑니다.
+--  일반 회원은 넣지 않습니다. 앱에서 회원가입하면 users 에 들어갑니다.
 -- =====================================================================
 USE cheongyang_bus;
 SET NAMES utf8mb4;
@@ -132,3 +132,7 @@ INSERT INTO schedule (route_id, departure_time, arrival_time) VALUES
   (13, '14:40', '16:42'),
   (13, '17:10', '19:12'),
   (13, '19:10', '21:20');
+
+-- 관리자 계정: 아이디 admin / 비밀번호 admin1234 (BCrypt 해시로 저장)
+INSERT INTO users (login_id, password_hash, nickname, role) VALUES
+  ('admin', '$2a$10$OmagE0ZHBxdiqjJ0x2xkQejdT/6FyJjBRHdFIaQ5nOoZWHSg39HT6', '관리자', 'ADMIN');

@@ -10,15 +10,14 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.cheongyangbus.data.AlarmRepository
 import com.example.cheongyangbus.data.Api
+import com.example.cheongyangbus.data.SeoulTime
 import com.example.cheongyangbus.data.currentStatus
 import com.example.cheongyangbus.databinding.ActivityBusDetailBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 class BusDetailActivity : BaseActivity() {
 
@@ -117,7 +116,7 @@ class BusDetailActivity : BaseActivity() {
             } else {
                 askNotificationPermission()
                 val at = alarms.set(bus)
-                val time = SimpleDateFormat("M월 d일 HH:mm", Locale.KOREA).format(Date(at))
+                val time = SeoulTime.formatter("M월 d일 HH:mm").format(Date(at))
                 val off =
                     if (AccountStore.alarmsOn(this)) ""
                     else "\n지금은 내 정보에서 출발 알림이 꺼져 있어 울리지 않습니다."

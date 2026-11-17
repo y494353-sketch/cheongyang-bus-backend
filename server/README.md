@@ -5,6 +5,7 @@
 ## 1. MySQL 준비 (MySQL 8.0.16 이상)
 
 `db/01_schema.sql` → `db/02_seed.sql` 순서로 실행합니다. 01은 `cheongyang_bus` DB를 지우고 새로 만듭니다.
+02에는 관리자 계정(아이디 `admin` / 비밀번호 `admin1234`)이 들어 있습니다.
 
 ```bash
 mysql -u root -p --default-character-set=utf8mb4 < db/01_schema.sql
@@ -51,10 +52,34 @@ MySQL이 다른 컴퓨터에 있으면 `DB_URL`, 계정 이름이 다르면 `DB_
 | 요청 | 내용 | 응답 |
 |---|---|---|
 | `POST /api/auth/signup` `{loginId, password}` | 회원가입 (BCrypt 해시 저장) | 201 가입 / 409 아이디 중복 |
-| `POST /api/auth/login` `{loginId, password}` | 로그인 | 200 성공 / 401 실패 |
+| `POST /api/auth/login` `{loginId, password}` | 로그인 | 200 `{loginId, role, token}` / 401 실패 |
+| `POST /api/auth/logout` | 로그아웃 (토큰 폐기) | 200 |
+| `GET /api/regions?origin=청양` 또는 `?dest=청양` | 시간표가 있는 지역 목록 | 목록 |
 | `GET /api/schedules?origin=청양&dest=대전` | 시간표 (출발 시각 순) | 목록 |
+| `GET /api/notices` | 공지사항 (최신순) | 목록 |
 | `GET /api/favorites?loginId=아이디` | 내 즐겨찾기 | 목록 |
 | `POST /api/favorites` `{loginId, scheduleId}` | 즐겨찾기 추가 | 200 |
 | `DELETE /api/favorites?loginId=아이디&scheduleId=1` | 즐겨찾기 해제 | 200 |
 
 시간표 한 편: `{scheduleId, originRegion, originTerminal, destRegion, destTerminal, departure, arrival, durationText}`
+
+### 관리자 API
+
+로그인 응답의 `token`을 `X-Auth-Token` 헤더로 보내야 하고, 관리자(`users.role = 'ADMIN'`)가 아니면 401입니다.
+토큰은 서버 메모리에만 있어서 서버를 다시 켜면 관리자도 다시 로그인해야 합니다.
+실패하면 `{"message": "이유"}`를 같이 보냅니다.
+
+| 요청 | 내용 | 응답 |
+|---|---|---|
+| `GET /api/admin/routes` | 노선 목록 (노선별 시간표 수 포함) | 목록 |
+| `POST /api/admin/routes` `{originRegion, originTerminal, destRegion, destTerminal}` | 노선 추가 (새 지역·터미널은 함께 생성, 터미널을 비우면 지역 이름 사용) | 201 / 400 / 409 이미 있음 |
+| `DELETE /api/admin/routes/{id}` | 노선 삭제 | 200 / 409 시간표가 있음 |
+| `GET /api/admin/schedules` | 전체 시간표 | 목록 |
+| `POST /api/admin/schedules` `{routeId, departure, arrival}` | 시간표 추가 (HH:mm 검증) | 201 / 400 / 409 같은 출발 시각 |
+| `PUT /api/admin/schedules/{id}` `{routeId, departure, arrival}` | 시간표 수정 | 200 / 400 / 404 / 409 |
+| `DELETE /api/admin/schedules/{id}` | 시간표 삭제 (그 편의 즐겨찾기도 삭제) | 200 |
+| `POST /api/admin/notices` `{title, content}` | 공지 등록 | 201 / 400 |
+| `PUT /api/admin/notices/{id}` `{title, content}` | 공지 수정 | 200 / 400 / 404 |
+| `DELETE /api/admin/notices/{id}` | 공지 삭제 | 200 |
+| `GET /api/admin/users` | 회원 목록 (비밀번호 해시 제외) | 목록 |
+| `DELETE /api/admin/users/{loginId}` | 회원 삭제 (즐겨찾기도 삭제, 관리자는 불가) | 200 / 400 / 404 |

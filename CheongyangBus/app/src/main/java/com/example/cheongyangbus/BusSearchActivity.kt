@@ -5,9 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.cheongyangbus.data.Api
 import com.example.cheongyangbus.databinding.ActivityBusSearchBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
+import java.io.IOException
 
 class BusSearchActivity : BaseActivity() {
 
@@ -44,9 +48,8 @@ class BusSearchActivity : BaseActivity() {
 
         val cheongyang = getString(R.string.cheongyang)
 
-        val regions = resources
-            .getStringArray(R.array.regions)
-            .filter { it != cheongyang }
+        // 지역 목록은 서버에서 받아옴 (아래 lifecycleScope)
+        var regions = emptyList<String>()
 
         val fixedLayout =
             if (departing) binding.originLayout
@@ -99,22 +102,50 @@ class BusSearchActivity : BaseActivity() {
         fixedInput.contentDescription =
             getString(R.string.fixed_cheongyang)
 
-        // 선택 가능한 지역 목록
-        selectableInput.setAdapter(
-            ArrayAdapter(
-                this,
-                android.R.layout.simple_dropdown_item_1line,
-                regions
+        // 선택 가능한 지역 목록: 서버 시간표에 있는 지역만
+        // (관리자가 노선·시간표를 추가하면 바로 나타남)
+        binding.searchButton.isEnabled = false
+        lifecycleScope.launch {
+            regions = try {
+                val list =
+                    if (departing) Api.regions(departingFrom = cheongyang)
+                    else Api.regions(arrivingAt = cheongyang)
+                list.filter { it != cheongyang }
+            } catch (e: IOException) {
+                Snackbar.make(
+                    binding.root,
+                    "서버에 연결할 수 없습니다.",
+                    Snackbar.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            if (regions.isEmpty()) {
+                Snackbar.make(
+                    binding.root,
+                    "시간표에 선택할 수 있는 지역이 없습니다.",
+                    Snackbar.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            selectableInput.setAdapter(
+                ArrayAdapter(
+                    this@BusSearchActivity,
+                    android.R.layout.simple_dropdown_item_1line,
+                    regions
+                )
             )
-        )
 
-        // 화면 회전 시 선택 지역 복원
-        val selected = savedInstanceState
-            ?.getString(savedKey)
-            ?.takeIf { it in regions }
-            ?: regions.first()
+            // 화면 회전 시 선택 지역 복원
+            val selected = savedInstanceState
+                ?.getString(savedKey)
+                ?.takeIf { it in regions }
+                ?: regions.first()
 
-        selectableInput.setText(selected, false)
+            selectableInput.setText(selected, false)
+            binding.searchButton.isEnabled = true
+        }
 
         // 검색 버튼
         binding.searchButton.setOnClickListener {
@@ -137,15 +168,8 @@ class BusSearchActivity : BaseActivity() {
             val destination =
                 if (departing) region else cheongyang
 
-            // 최근 경로 저장
-            AccountStore.setRecentRoute(
-                this,
-                getString(
-                    R.string.route_format,
-                    origin,
-                    destination
-                )
-            )
+            // 최근 경로 저장 (메인 화면 카운트다운에도 사용)
+            AccountStore.setRecentSearch(this, origin, destination)
 
             // 버스 결과 화면 이동
             startActivity(

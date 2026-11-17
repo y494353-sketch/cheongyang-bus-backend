@@ -20,6 +20,13 @@
         <activity android:name=".BusDetailActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".FavoriteActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".MyPageActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".NoticeActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize"/>
+        <!-- 관리자 화면 -->
+        <activity android:name=".AdminActivity" android:exported="false" android:screenOrientation="portrait"/>
+        <activity android:name=".RouteManageActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ScheduleManageActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".NoticeManageActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".MemberManageActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize"/>
         <receiver android:name=".data.AlarmReceiver" android:exported="false"/>
     </application>
 </manifest>

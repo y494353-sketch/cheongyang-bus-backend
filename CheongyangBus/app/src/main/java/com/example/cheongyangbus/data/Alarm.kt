@@ -58,10 +58,9 @@ class AlarmRepository(private val context: Context) {
     }
 }
 
-/** 출발 시각 10분 전 (오늘 이미 지났으면 내일) */
+/** 출발 시각 10분 전 (오늘 이미 지났으면 내일). 한국 시간 기준 */
 internal fun triggerTime(departure: String, now: Long): Long {
-    val time = Calendar.getInstance().apply {
-        timeInMillis = now
+    val time = SeoulTime.calendar(now).apply {
         set(Calendar.HOUR_OF_DAY, departure.substring(0, 2).toInt())
         set(Calendar.MINUTE, departure.substring(3, 5).toInt())
         set(Calendar.SECOND, 0)

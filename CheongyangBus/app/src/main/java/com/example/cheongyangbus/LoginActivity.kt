@@ -21,9 +21,9 @@ class LoginActivity : BaseActivity() {
         setContentView(binding.root)
         prepareScreen(binding.root)
 
-        // 이미 로그인한 상태라면 메인 화면으로 이동
+        // 이미 로그인한 상태라면 메인(관리자는 관리자) 화면으로 이동
         if (AccountStore.isLoggedIn(this)) {
-            openMainScreen()
+            openMainScreen(AccountStore.isAdmin(this))
             return
         }
 
@@ -63,11 +63,11 @@ class LoginActivity : BaseActivity() {
         }
     }
 
-    // 서버(MySQL users)에서 아이디·비밀번호 확인
+    // 서버(MySQL users)에서 아이디·비밀번호 확인. 관리자 계정(role = ADMIN)도 같은 화면에서 로그인
     private fun login(id: String, password: String) {
         binding.loginButton.isEnabled = false
         lifecycleScope.launch {
-            val ok = try {
+            val result = try {
                 Api.login(id, password)
             } catch (e: IOException) {
                 Toast.makeText(
@@ -80,7 +80,7 @@ class LoginActivity : BaseActivity() {
             }
             binding.loginButton.isEnabled = true
 
-            if (!ok) {
+            if (result == null) {
                 Toast.makeText(
                     this@LoginActivity,
                     "아이디 또는 비밀번호가 올바르지 않습니다.",
@@ -89,20 +89,22 @@ class LoginActivity : BaseActivity() {
                 return@launch
             }
 
-            AccountStore.setLoginId(this@LoginActivity, id)
+            AccountStore.login(this@LoginActivity, id, result.isAdmin, result.token)
 
             Toast.makeText(
                 this@LoginActivity,
-                "로그인되었습니다.",
+                if (result.isAdmin) "관리자로 로그인되었습니다." else "로그인되었습니다.",
                 Toast.LENGTH_SHORT
             ).show()
 
-            openMainScreen()
+            openMainScreen(result.isAdmin)
         }
     }
 
-    private fun openMainScreen() {
-        val intent = Intent(this, MainActivity::class.java).apply {
+    // 관리자는 관리자 대시보드, 일반 회원은 메인 화면
+    private fun openMainScreen(isAdmin: Boolean) {
+        val screen = if (isAdmin) AdminActivity::class.java else MainActivity::class.java
+        val intent = Intent(this, screen).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
