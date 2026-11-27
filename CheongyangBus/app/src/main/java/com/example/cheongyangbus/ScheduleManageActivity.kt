@@ -166,7 +166,7 @@ class ScheduleManageActivity : BaseActivity() {
         val schedule = schedules.getOrNull(position) ?: return
         AlertDialog.Builder(this)
             .setTitle("시간표 삭제")
-            .setMessage("${schedule.routeLabel} ${schedule.departure} 편을 삭제할까요?\n이 편을 즐겨찾기한 기록도 함께 지워집니다.")
+            .setMessage("${schedule.routeLabel} ${schedule.departure} 편을 삭제할까요?\n버스 조회에서 빠지고, 즐겨찾기한 사용자에게는 '운행 폐지'로 연하게 표시됩니다.")
             .setPositiveButton("삭제") { _, _ ->
                 lifecycleScope.launch {
                     if (adminCall { token -> AdminApi.deleteSchedule(token, schedule.id) } != null) {

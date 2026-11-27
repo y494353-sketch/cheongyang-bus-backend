@@ -224,4 +224,6 @@
     <string name="notice_empty">등록된 공지사항이 없습니다.</string>
     <string name="notice_load_failed">공지사항을 불러오지 못했습니다.</string>
     <string name="notice_registered_at">등록일</string>
+    <string name="route_stopped">운행 폐지</string>
+    <string name="route_stopped_detail">운행 폐지 (관리자가 삭제한 노선·시간표)</string>
 </resources>

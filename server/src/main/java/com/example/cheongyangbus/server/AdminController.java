@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
  * 토큰 주인이 관리자(users.role = 'ADMIN')가 아니면 401 을 돌려줍니다.
  * 실패 이유는 {"message": "..."} 로 보냅니다.
  *
- * 노선   GET /api/admin/routes · POST /api/admin/routes · DELETE /api/admin/routes/{id}
- * 시간표 GET /api/admin/schedules · POST /api/admin/schedules · PUT·DELETE /api/admin/schedules/{id}
+ * 노선   GET /api/admin/routes · POST /api/admin/routes · DELETE /api/admin/routes/{id} (사용 중지)
+ * 시간표 GET /api/admin/schedules · POST /api/admin/schedules · PUT·DELETE /api/admin/schedules/{id} (삭제 = 사용 중지)
  * 공지   POST /api/admin/notices · PUT·DELETE /api/admin/notices/{id}
  * 회원   GET /api/admin/users · DELETE /api/admin/users/{loginId}
  */
@@ -60,12 +60,13 @@ public class AdminController {
                 SELECT r.route_id AS routeId,
                        oreg.region_name AS originRegion, ot.terminal_name AS originTerminal,
                        dreg.region_name AS destRegion,   dt.terminal_name AS destTerminal,
-                       (SELECT COUNT(*) FROM schedule s WHERE s.route_id = r.route_id) AS scheduleCount
+                       (SELECT COUNT(*) FROM schedule s WHERE s.route_id = r.route_id AND s.is_active = TRUE) AS scheduleCount
                 FROM route r
                 JOIN terminal ot   ON ot.terminal_id = r.origin_terminal_id
                 JOIN region   oreg ON oreg.region_id = ot.region_id
                 JOIN terminal dt   ON dt.terminal_id = r.dest_terminal_id
                 JOIN region   dreg ON dreg.region_id = dt.region_id
+                WHERE r.is_active = TRUE
                 ORDER BY oreg.sort_order, dreg.sort_order, r.route_id
                 """));
     }
@@ -94,6 +95,11 @@ public class AdminController {
         if (origin == null || dest == null) {
             return badRequest("같은 이름의 터미널이 다른 지역에 이미 있습니다.");
         }
+        // 삭제(사용 중지)했던 노선을 다시 추가하면 다시 사용 (시간표·즐겨찾기도 다시 정상 표시)
+        int revived = db.update(
+                "UPDATE route SET is_active = TRUE WHERE origin_terminal_id = ? AND dest_terminal_id = ? AND is_active = FALSE",
+                origin, dest);
+        if (revived > 0) return ResponseEntity.status(HttpStatus.CREATED).build();
         try {
             db.update("INSERT INTO route (origin_terminal_id, dest_terminal_id) VALUES (?, ?)", origin, dest);
         } catch (DuplicateKeyException e) {
@@ -102,16 +108,16 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * 노선 삭제 = 사용 중지 (DB에서 지우지 않음).
+     * 그 노선의 시간표는 검색·관리 목록에서 빠지고, 사용자 즐겨찾기에는 '운행 폐지'로 연하게 남습니다.
+     */
     @DeleteMapping("/routes/{id}")
     public ResponseEntity<?> deleteRoute(@RequestHeader(value = TOKEN, required = false) String token,
                                          @PathVariable int id) {
         if (!isAdmin(token)) return unauthorized();
-        Integer count = db.queryForObject("SELECT COUNT(*) FROM schedule WHERE route_id = ?", Integer.class, id);
-        if (count != null && count > 0) {
-            return conflict("시간표가 있는 노선은 삭제할 수 없습니다. 시간표를 먼저 삭제하세요.");
-        }
-        db.update("DELETE FROM route WHERE route_id = ?", id);
-        return ResponseEntity.ok().build();
+        int rows = db.update("UPDATE route SET is_active = FALSE WHERE route_id = ? AND is_active = TRUE", id);
+        return rows > 0 ? ResponseEntity.ok().build() : notFound("없는 노선입니다.");
     }
 
     // ----------------------------------------------------------------- 시간표
@@ -141,6 +147,12 @@ public class AdminController {
         if (!isAdmin(token)) return unauthorized();
         String error = checkSchedule(s);
         if (error != null) return badRequest(error);
+        // 삭제(사용 중지)했던 같은 노선·같은 출발 시각의 편이 있으면 그 편을 다시 사용 (즐겨찾기도 다시 정상 표시)
+        int revived = db.update("""
+                UPDATE schedule SET is_active = TRUE, arrival_time = ?
+                WHERE route_id = ? AND departure_time = ? AND day_type = 'DAILY' AND is_active = FALSE
+                """, s.arrival(), s.routeId(), s.departure());
+        if (revived > 0) return ResponseEntity.status(HttpStatus.CREATED).build();
         try {
             db.update("INSERT INTO schedule (route_id, departure_time, arrival_time) VALUES (?, ?, ?)",
                     s.routeId(), s.departure(), s.arrival());
@@ -157,22 +169,26 @@ public class AdminController {
         String error = checkSchedule(s);
         if (error != null) return badRequest(error);
         try {
-            int rows = db.update("UPDATE schedule SET route_id = ?, departure_time = ?, arrival_time = ? WHERE schedule_id = ?",
+            int rows = db.update(
+                    "UPDATE schedule SET route_id = ?, departure_time = ?, arrival_time = ? WHERE schedule_id = ? AND is_active = TRUE",
                     s.routeId(), s.departure(), s.arrival(), id);
             if (rows == 0) return notFound("없는 시간표입니다.");
         } catch (DuplicateKeyException e) {
-            return conflict("같은 노선에 같은 출발 시각이 이미 있습니다.");
+            return conflict("같은 노선에 같은 출발 시각이 이미 있습니다. (삭제한 편이면 시간표 추가로 같은 시각을 넣으면 다시 사용됩니다)");
         }
         return ResponseEntity.ok().build();
     }
 
-    /** 시간표 삭제. 이 편을 즐겨찾기한 기록도 함께 지워집니다 (favorite ON DELETE CASCADE). */
+    /**
+     * 시간표 삭제 = 사용 중지 (DB에서 지우지 않음).
+     * 검색·관리 목록에서는 빠지고, 이 편을 즐겨찾기한 사용자에게는 '운행 폐지'로 연하게 남습니다.
+     */
     @DeleteMapping("/schedules/{id}")
     public ResponseEntity<?> deleteSchedule(@RequestHeader(value = TOKEN, required = false) String token,
                                             @PathVariable int id) {
         if (!isAdmin(token)) return unauthorized();
-        db.update("DELETE FROM schedule WHERE schedule_id = ?", id);
-        return ResponseEntity.ok().build();
+        int rows = db.update("UPDATE schedule SET is_active = FALSE WHERE schedule_id = ? AND is_active = TRUE", id);
+        return rows > 0 ? ResponseEntity.ok().build() : notFound("없는 시간표입니다.");
     }
 
     // ----------------------------------------------------------------- 공지사항 (목록은 ApiController /api/notices)
@@ -249,7 +265,8 @@ public class AdminController {
             return "시간은 09:05 처럼 HH:mm 형식으로 입력하세요.";
         }
         if (s.departure().equals(s.arrival())) return "출발 시각과 도착 시각이 같습니다.";
-        Integer route = db.queryForObject("SELECT COUNT(*) FROM route WHERE route_id = ?", Integer.class, s.routeId());
+        Integer route = db.queryForObject(
+                "SELECT COUNT(*) FROM route WHERE route_id = ? AND is_active = TRUE", Integer.class, s.routeId());
         if (route == null || route == 0) return "없는 노선입니다.";
         return null;
     }

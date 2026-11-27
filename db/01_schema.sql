@@ -54,11 +54,15 @@ CREATE TABLE terminal (
 -- ---------------------------------------------------------------------
 -- 3. route : 노선(구간) = 출발 터미널 → 도착 터미널
 --    경유 노선(청양→공주→대전)도 승차권·시간표처럼 구간별로 저장
+--    관리자가 노선을 삭제하면 행을 지우지 않고 is_active = FALSE (사용 중지)
+--    → 그 노선의 시간표는 검색에서 빠지고, 즐겨찾기에는 '운행 폐지'로 남음
+--    (시간표 한 편을 삭제할 때도 schedule.is_active = FALSE 로 같은 방식)
 -- ---------------------------------------------------------------------
 CREATE TABLE route (
   route_id            INT  NOT NULL AUTO_INCREMENT COMMENT '노선 번호',
   origin_terminal_id  INT  NOT NULL                COMMENT '출발 터미널',
   dest_terminal_id    INT  NOT NULL                COMMENT '도착 터미널',
+  is_active           BOOLEAN NOT NULL DEFAULT TRUE COMMENT '사용 여부 (관리자가 삭제하면 FALSE)',
   PRIMARY KEY (route_id),
   UNIQUE KEY uk_route (origin_terminal_id, dest_terminal_id),
   KEY idx_route_dest (dest_terminal_id),
@@ -79,7 +83,7 @@ CREATE TABLE schedule (
   arrival_time    TIME         NOT NULL                COMMENT '도착 예정 시각',
   bus_grade       VARCHAR(10)  NOT NULL DEFAULT '일반'  COMMENT '등급: 일반 / 우등',
   day_type        VARCHAR(10)  NOT NULL DEFAULT 'DAILY' COMMENT '운행 요일: DAILY 매일 / WEEKDAY 평일 / WEEKEND 주말',
-  is_active       BOOLEAN      NOT NULL DEFAULT TRUE    COMMENT '현재 운행 여부 (시간표 개편으로 없어진 편은 FALSE)',
+  is_active       BOOLEAN      NOT NULL DEFAULT TRUE    COMMENT '현재 운행 여부 (관리자가 삭제하거나 시간표 개편으로 없어진 편은 FALSE)',
   PRIMARY KEY (schedule_id),
   UNIQUE KEY uk_schedule (route_id, departure_time, day_type),
   CONSTRAINT fk_schedule_route FOREIGN KEY (route_id) REFERENCES route (route_id),
@@ -221,7 +225,7 @@ FROM (
     MOD(TIME_TO_SEC(s.arrival_time) + 86400 - TIME_TO_SEC(s.departure_time), 86400) DIV 60 AS duration_min,
     s.bus_grade,
     s.day_type,
-    s.is_active
+    (s.is_active AND r.is_active) AS is_active   -- 편 또는 노선이 사용 중지면 0
   FROM schedule s
   JOIN route    r    ON r.route_id     = s.route_id
   JOIN terminal ot   ON ot.terminal_id = r.origin_terminal_id

@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 
 // 관리자: 노선(출발 터미널 → 도착 터미널) 목록·추가·삭제 (서버 MySQL route 테이블)
 // 새 지역·터미널을 입력하면 서버가 함께 만들고, 시간표 관리에서 이 노선을 고를 수 있습니다.
+// 삭제는 DB에서 지우지 않고 사용 중지만 합니다. 같은 노선을 다시 추가하면 다시 사용됩니다.
 class RouteManageActivity : BaseActivity() {
 
     private lateinit var binding: ActivityRouteManageBinding
@@ -105,13 +106,13 @@ class RouteManageActivity : BaseActivity() {
     }
 
     private fun confirmDelete(route: Route) {
-        if (route.scheduleCount > 0) {
-            Toast.makeText(this, "시간표가 ${route.scheduleCount}편 있는 노선입니다. 시간표를 먼저 삭제하세요.", Toast.LENGTH_SHORT).show()
-            return
-        }
         AlertDialog.Builder(this)
             .setTitle("노선 삭제")
-            .setMessage("${route.label} 노선을 삭제할까요?")
+            .setMessage(
+                "${route.label} 노선을 삭제할까요?\n" +
+                    "이 노선의 시간표 ${route.scheduleCount}편이 버스 조회에서 빠지고, " +
+                    "즐겨찾기한 사용자에게는 '운행 폐지'로 연하게 표시됩니다."
+            )
             .setPositiveButton("삭제") { _, _ ->
                 lifecycleScope.launch {
                     if (adminCall { token -> AdminApi.deleteRoute(token, route.id) } != null) {

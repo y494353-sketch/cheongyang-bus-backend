@@ -22,7 +22,13 @@ class BusTimeAdapter(
             destinationName.text = bus.destination
             departureTime.text = bus.departure
             arrivalTime.text = bus.arrival
-            statusBadge.text = if (isFavorite) "★ ${root.context.getString(R.string.favorite)}" else bus.status
+            statusBadge.text = when {
+                !bus.active -> root.context.getString(R.string.route_stopped)
+                isFavorite -> "★ ${root.context.getString(R.string.favorite)}"
+                else -> bus.status
+            }
+            // 관리자가 노선을 삭제(사용 중지)한 편은 연하게 표시
+            root.alpha = if (bus.active) 1f else 0.45f
             durationText.text = root.context.getString(R.string.duration_format, bus.duration)
             detailButton.contentDescription = root.context.getString(R.string.detail_accessibility, bus.departure, bus.arrival)
             detailButton.setOnClickListener { onDetail(bus) }

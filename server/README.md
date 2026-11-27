@@ -57,7 +57,7 @@ MySQL이 다른 컴퓨터에 있으면 `DB_URL`, 계정 이름이 다르면 `DB_
 | `GET /api/regions?origin=청양` 또는 `?dest=청양` | 시간표가 있는 지역 목록 | 목록 |
 | `GET /api/schedules?origin=청양&dest=대전` | 시간표 (출발 시각 순) | 목록 |
 | `GET /api/notices` | 공지사항 (최신순) | 목록 |
-| `GET /api/favorites?loginId=아이디` | 내 즐겨찾기 | 목록 |
+| `GET /api/favorites?loginId=아이디` | 내 즐겨찾기 (각 편에 `active`: 1 운행 / 0 관리자가 삭제한 노선·시간표) | 목록 |
 | `POST /api/favorites` `{loginId, scheduleId}` | 즐겨찾기 추가 | 200 |
 | `DELETE /api/favorites?loginId=아이디&scheduleId=1` | 즐겨찾기 해제 | 200 |
 
@@ -73,11 +73,11 @@ MySQL이 다른 컴퓨터에 있으면 `DB_URL`, 계정 이름이 다르면 `DB_
 |---|---|---|
 | `GET /api/admin/routes` | 노선 목록 (노선별 시간표 수 포함) | 목록 |
 | `POST /api/admin/routes` `{originRegion, originTerminal, destRegion, destTerminal}` | 노선 추가 (새 지역·터미널은 함께 생성, 터미널을 비우면 지역 이름 사용) | 201 / 400 / 409 이미 있음 |
-| `DELETE /api/admin/routes/{id}` | 노선 삭제 | 200 / 409 시간표가 있음 |
+| `DELETE /api/admin/routes/{id}` | 노선 삭제 = **사용 중지** (DB에서 지우지 않음). 그 노선 시간표는 검색에서 빠지고, 즐겨찾기에는 `active: 0`으로 남음. 같은 노선을 다시 추가하면 다시 사용 | 200 / 404 |
 | `GET /api/admin/schedules` | 전체 시간표 | 목록 |
 | `POST /api/admin/schedules` `{routeId, departure, arrival}` | 시간표 추가 (HH:mm 검증) | 201 / 400 / 409 같은 출발 시각 |
 | `PUT /api/admin/schedules/{id}` `{routeId, departure, arrival}` | 시간표 수정 | 200 / 400 / 404 / 409 |
-| `DELETE /api/admin/schedules/{id}` | 시간표 삭제 (그 편의 즐겨찾기도 삭제) | 200 |
+| `DELETE /api/admin/schedules/{id}` | 시간표 삭제 = **사용 중지** (DB에서 지우지 않음). 검색에서 빠지고 즐겨찾기에는 `active: 0`으로 남음. 같은 노선·같은 출발 시각을 다시 추가하면 다시 사용 | 200 / 404 |
 | `POST /api/admin/notices` `{title, content}` | 공지 등록 | 201 / 400 |
 | `PUT /api/admin/notices/{id}` `{title, content}` | 공지 수정 | 200 / 400 / 404 |
 | `DELETE /api/admin/notices/{id}` | 공지 삭제 | 200 |

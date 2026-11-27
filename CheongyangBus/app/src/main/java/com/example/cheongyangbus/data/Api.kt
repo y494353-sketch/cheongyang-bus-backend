@@ -155,9 +155,17 @@ internal fun busList(json: String): List<BusTime> {
             arrival = arrival,
             duration = o.getString("durationText"),
             status = currentStatus(departure, arrival),
-            scheduleId = o.getInt("scheduleId")
+            scheduleId = o.getInt("scheduleId"),
+            active = isActive(o.opt("active"))
         )
     }
+}
+
+// 즐겨찾기 목록에만 오는 운행 여부. 서버(MySQL)는 1/0 으로 보냄. 값이 없으면 운행 중
+private fun isActive(value: Any?) = when (value) {
+    is Boolean -> value
+    is Number -> value.toInt() != 0
+    else -> true
 }
 
 // 터미널 이름이 지역 이름과 같으면 지역만, 다르면 "대전(유성)"

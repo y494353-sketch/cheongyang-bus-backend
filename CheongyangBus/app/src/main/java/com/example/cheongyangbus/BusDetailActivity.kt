@@ -137,7 +137,9 @@ class BusDetailActivity : BaseActivity() {
         super.onResume()
 
         if (::binding.isInitialized) {
-            binding.statusText.text = currentStatus(bus.departure, bus.arrival)
+            binding.statusText.text =
+                if (bus.active) currentStatus(bus.departure, bus.arrival)
+                else getString(R.string.route_stopped_detail)
         }
     }
 
@@ -167,5 +169,8 @@ class BusDetailActivity : BaseActivity() {
                 R.string.set_alarm
             }
         )
+
+        // 운행 폐지된 편은 새 알림을 못 걸고, 이미 걸어 둔 알림 해제만 가능
+        binding.alarmButton.isEnabled = bus.active || alarms.isSet(bus)
     }
 }

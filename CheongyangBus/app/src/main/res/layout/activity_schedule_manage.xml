@@ -17,7 +17,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="버스 출발 및 도착 시간을 관리할 수 있습니다. 저장하면 버스 조회에 바로 반영됩니다."
+        android:text="버스 출발 및 도착 시간을 관리할 수 있습니다. 저장하면 버스 조회에 바로 반영되고, 삭제한 편은 즐겨찾기에 운행 폐지로 남습니다."
         android:textSize="14sp"
         android:textColor="#788397"
         android:layout_marginBottom="20dp" />

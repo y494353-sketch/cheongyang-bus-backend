@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  * GET    /api/regions?origin=청양 | ?dest=청양       시간표가 있는 지역 목록
  * GET    /api/schedules?origin=청양&dest=대전        시간표 목록
  * GET    /api/notices                               공지사항 목록 (최신순)
- * GET    /api/favorites?loginId=아이디               즐겨찾기 목록
+ * GET    /api/favorites?loginId=아이디               즐겨찾기 목록 (active = 0 이면 삭제된 노선의 편)
  * POST   /api/favorites     {loginId, scheduleId}   즐겨찾기 추가
  * DELETE /api/favorites?loginId=아이디&scheduleId=1  즐겨찾기 해제
  *
@@ -136,14 +136,16 @@ public class ApiController {
 
     // ----------------------------------------------------------------- 즐겨찾기
 
+    /** 즐겨찾기 목록. 관리자가 노선·시간표를 삭제(사용 중지)한 편도 active = 0 으로 함께 보냄 (목록 아래쪽) */
     @GetMapping("/favorites")
     public List<Map<String, Object>> favorites(@RequestParam String loginId) {
         return db.queryForList("SELECT " + SCHEDULE_COLUMNS + """
+                , v.is_active AS active
                 FROM favorite f
                 JOIN users u      ON u.user_id = f.user_id
                 JOIN v_schedule v ON v.schedule_id = f.schedule_id
                 WHERE u.login_id = ?
-                ORDER BY v.departure_time
+                ORDER BY v.is_active DESC, v.departure_time
                 """, loginId);
     }
 
